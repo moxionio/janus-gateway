@@ -496,6 +496,10 @@ function Janus(gatewayCallbacks) {
 	var apisecret = null;
 	if(gatewayCallbacks.apisecret !== undefined && gatewayCallbacks.apisecret !== null)
 		apisecret = gatewayCallbacks.apisecret;
+	// Optional custom subprotocol
+	var subprotocol = null;
+	if(gatewayCallbacks.subprotocol !== undefined && gatewayCallbacks.subprotocol !== null)
+		subprotocol = gatewayCallbacks.subprotocol;
 	// Whether we should destroy this session when onbeforeunload is called
 	this.destroyOnUnload = true;
 	if(gatewayCallbacks.destroyOnUnload !== undefined && gatewayCallbacks.destroyOnUnload !== null)
@@ -864,7 +868,11 @@ function Janus(gatewayCallbacks) {
 			}
 		}
 		if(websockets) {
-			ws = Janus.newWebSocket(server, 'janus-protocol');
+			if (subprotocol) {
+				ws = Janus.newWebSocket(server, ['janus-protocol', subprotocol]);
+			} else {
+				ws = Janus.newWebSocket(server, 'janus-protocol');
+			}
 			wsHandlers = {
 				'error': function() {
 					Janus.error("Error connecting to the Janus WebSockets server... " + server);
